@@ -1,5 +1,10 @@
 # Sistema Bancário Simples
 
+## Integrantes 
 
-# Objetivo geral:
+- Pedro Henrique de Araujo Alves
+- 
+
+
+# Objetivo geral
 
