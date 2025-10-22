@@ -2,7 +2,7 @@ package model;
 
 public class ContaPoupanca extends Conta{
     public ContaPoupanca(Cliente cliente, double saldoInicial) {
-        super(cliente, saldoInicial);
+        super( cliente, saldoInicial);
     }
 
     public void aplicarRendimento(double percentual) {

@@ -1,20 +1,18 @@
 package model;
 
 public abstract class Conta {
-    protected int numero;
+    protected int numeroConta;
     protected Cliente cliente;
     protected double saldo;
-    protected String tipo;
 
     public Conta(Cliente cliente, double saldoInicial) {
-        this.numero = numero;
+        this.numeroConta = numeroConta;
         this.cliente = cliente;
         this.saldo = saldoInicial;
-        this.tipo = tipo;
     }
 
     public int getNumero() {
-        return numero;
+        return numeroConta;
     }
 
     public Cliente getCliente() {
@@ -25,9 +23,7 @@ public abstract class Conta {
         return saldo;
     }
 
-    public String getTipo() {
-        return tipo;
-    }
+    public abstract String getTipo();
 
     public void depositar(double valor) {
         if (valor > 0) {
@@ -57,6 +53,6 @@ public abstract class Conta {
     @Override
     public String toString() {
         return String.format("Conta{numero=%d, cliente=%s, saldo=%.2f, tipo='%s'}",
-                numero, cliente.getNome(), saldo, tipo);
+                numeroConta, cliente.getNome(), saldo, getTipo());
     }
 }
