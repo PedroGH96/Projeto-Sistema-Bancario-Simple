@@ -16,4 +16,5 @@ Sistema bancário desenvolvido em Java que simula operações financeiras básic
 3. Operações de depósito, saque e transferência entre contas
 4. Consulta de saldo
 5. Aplicação de rendimento para contas poupança
-6. Listagem de contas ordenadas por saldo 
+6. Listagem de contas ordenadas por saldo ]
+7. Relatório de consolidação com totais por tipo de conta
