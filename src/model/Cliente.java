@@ -24,6 +24,7 @@ public class Cliente {
         Cliente cliente = (Cliente) objeto;
         return cpf.equals(cliente.cpf);
     }
+
     @Override
     public String toString() {
         return "Cliente{nome='" + nome + "', cpf='" + cpf + "'}";

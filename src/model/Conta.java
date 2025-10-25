@@ -5,7 +5,7 @@ public abstract class Conta {
     protected Cliente cliente;
     protected double saldo;
 
-    public Conta(Cliente cliente, double saldoInicial) {
+    public Conta(int numeroConta, Cliente cliente, double saldoInicial) {
         this.numeroConta = numeroConta;
         this.cliente = cliente;
         this.saldo = saldoInicial;
