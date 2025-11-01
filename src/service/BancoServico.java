@@ -1,169 +1,166 @@
 package service;
 
+import constants.Constantes;
+import exception.*;
+import factory.ContaFactory;
 import model.Cliente;
 import model.Conta;
-import model.ContaCorrente;
 import model.ContaPoupanca;
-import java.util.ArrayList;
+import repository.IRepositorioClientes;
+import repository.IRepositorioContas;
+
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.Objects;
 
-public class BancoServico {
-
-    private List<Cliente> clientes;
-    private List<Conta> contas;
+/**
+ * Serviço bancário que implementa operações bancárias.
+ * Boa Prática: SRP, DIP, Programação Defensiva.
+ */
+public class BancoServico implements IOperacoesBancarias {
+    private final IRepositorioClientes repositorioClientes;
+    private final IRepositorioContas repositorioContas;
     private int proximoNumeroConta;
 
-    public BancoServico() {
-        this.clientes = new ArrayList<>();
-        this.contas = new ArrayList<>();
-        this.proximoNumeroConta = 1001;
+    /**
+     * Construtor com injeção de dependências.
+     * Boa Prática: DIP - Depende de abstrações (interfaces).
+     *
+     * @param repositorioClientes Repositório de clientes
+     * @param repositorioContas Repositório de contas
+     */
+    public BancoServico(IRepositorioClientes repositorioClientes,
+                        IRepositorioContas repositorioContas) {
+        this.repositorioClientes = Objects.requireNonNull(repositorioClientes,
+                "Repositório de clientes não pode ser nulo");
+        this.repositorioContas = Objects.requireNonNull(repositorioContas,
+                "Repositório de contas não pode ser nulo");
+        this.proximoNumeroConta = Constantes.NUMERO_CONTA_INICIAL;
     }
 
-    public Cliente cadastrarCliente(String nome, String cpf) {
-        if (clientes.stream().anyMatch(c -> c.getCpf().equals(cpf))) {
-            System.out.println("Cliente com CPF " + cpf + " já existe.");
-            return null;
-        }
-
+    @Override
+    public Cliente cadastrarCliente(String nome, String cpf)
+            throws DadosInvalidosException, CpfInvalidoException, ClienteJaExisteException {
+        // Programação Defensiva: Validações já estão no construtor de Cliente
         Cliente novoCliente = new Cliente(nome, cpf);
-        clientes.add(novoCliente);
-        System.out.println("Cliente " + nome + " cadastrado com sucesso.");
+        repositorioClientes.adicionar(novoCliente);
+
         return novoCliente;
     }
 
-    public Conta cadastrarConta(Cliente cliente, String tipoConta, double saldoInicial) {
-        if (cliente == null) {
-            System.out.println("Cliente não pode ser nulo para cadastrar conta.");
-            return null;
-        }
+    @Override
+    public Conta cadastrarConta(String cpfCliente, String tipoConta, double saldoInicial)
+            throws ClienteNaoEncontradoException, TipoContaInvalidoException, DadosInvalidosException {
+        // Busca cliente
+        Cliente cliente = repositorioClientes.buscarPorCpf(cpfCliente)
+                .orElseThrow(() -> new ClienteNaoEncontradoException(cpfCliente));
 
-        Conta novaConta;
-        int numeroConta = proximoNumeroConta++;
+        // Gera número único e cria conta usando Factory
+        int numeroConta = gerarProximoNumeroConta();
+        Conta novaConta = ContaFactory.criarConta(numeroConta, cliente, tipoConta, saldoInicial);
 
-        if ("corrente".equalsIgnoreCase(tipoConta)) {
-            novaConta = new ContaCorrente(numeroConta, cliente, saldoInicial);
-        } else if ("poupanca".equalsIgnoreCase(tipoConta)) {
-            novaConta = new ContaPoupanca(numeroConta, cliente, saldoInicial);
-        } else {
-            System.out.println("Tipo de conta inválido. Use 'corrente' ou 'poupanca'.");
-            return null;
-        }
+        // Adiciona ao repositório
+        repositorioContas.adicionar(novaConta);
 
-        contas.add(novaConta);
-        System.out.println("Conta " + tipoConta + " para " + cliente.getNome() + " criada com sucesso. Número: " + novaConta.getNumero());
         return novaConta;
     }
 
-    public Optional<Conta> buscarConta(int numeroConta) {
-        return contas.stream().filter(c -> c.getNumero() == numeroConta).findFirst();
+    @Override
+    public void depositar(int numeroConta, double valor)
+            throws ContaNaoEncontradaException, ValorInvalidoException {
+        Conta conta = buscarContaOuLancarExcecao(numeroConta);
+        conta.depositar(valor);
     }
 
-    public boolean depositar(int numeroConta, double valor) {
-        Optional<Conta> contaOpt = buscarConta(numeroConta);
-        if (contaOpt.isPresent()) {
-            contaOpt.get().depositar(valor);
-            System.out.println("Depósito de R$ " + String.format("%.2f", valor) + " realizado na conta " + numeroConta);
-            return true;
+    @Override
+    public void sacar(int numeroConta, double valor)
+            throws ContaNaoEncontradaException, ValorInvalidoException, SaldoInsuficienteException {
+        Conta conta = buscarContaOuLancarExcecao(numeroConta);
+        conta.sacar(valor);
+    }
+
+    @Override
+    public void transferir(int numeroContaOrigem, int numeroContaDestino, double valor)
+            throws ContaNaoEncontradaException, ValorInvalidoException, SaldoInsuficienteException {
+        // Validação adicional
+        if (numeroContaOrigem == numeroContaDestino) {
+            throw new IllegalArgumentException("Conta origem e destino não podem ser iguais");
         }
-        System.out.println("Conta " + numeroConta + " não encontrada.");
-        return false;
+
+        Conta contaOrigem = buscarContaOuLancarExcecao(numeroContaOrigem);
+        Conta contaDestino = buscarContaOuLancarExcecao(numeroContaDestino);
+
+        contaOrigem.transferir(contaDestino, valor);
     }
 
-    public boolean sacar(int numeroConta, double valor) {
-        Optional<Conta> contaOpt = buscarConta(numeroConta);
-        if (contaOpt.isPresent()) {
-            if (contaOpt.get().sacar(valor)) {
-                System.out.println("Saque de R$ " + String.format("%.2f", valor) + " realizado da conta " + numeroConta);
-                return true;
-            } else {
-                System.out.println("Saldo insuficiente na conta " + numeroConta);
-                return false;
-            }
-        }
-        System.out.println("Conta " + numeroConta + " não encontrada.");
-        return false;
+    @Override
+    public double consultarSaldo(int numeroConta) throws ContaNaoEncontradaException {
+        Conta conta = buscarContaOuLancarExcecao(numeroConta);
+        return conta.getSaldo();
     }
 
-    public boolean transferir(int contaOrigem, int contaDestino, double valor) {
-        Optional<Conta> origemOpt = buscarConta(contaOrigem);
-        Optional<Conta> destinoOpt = buscarConta(contaDestino);
+    @Override
+    public int aplicarRendimentoPoupancas(double percentual) throws ValorInvalidoException {
+        List<Conta> contasPoupanca = repositorioContas.listarContasPoupanca();
 
-        if (origemOpt.isPresent() && destinoOpt.isPresent()) {
-            if (origemOpt.get().transferir(destinoOpt.get(), valor)) {
-                System.out.println("Transferência de R$ " + String.format("%.2f", valor) + " da conta " + contaOrigem + " para a conta " + contaDestino + " realizada com sucesso.");
-                return true;
-            } else {
-                System.out.println("Falha na transferência: saldo insuficiente ou valor inválido.");
-                return false;
-            }
-        }
-        System.out.println("Conta de origem ou destino não encontrada.");
-        return false;
-    }
-
-    public Double consultarSaldo(int numeroConta) {
-        Conta conta = buscarContaPorNumero(numeroConta);
-        if (conta != null) {
-            double saldo = conta.getSaldo();
-            System.out.printf("Saldo da conta %d: R$ %.2f%n", numeroConta, saldo);
-            return saldo;
-        } else {
-            System.out.println("Conta " + numeroConta + " não encontrada.");
-            return null;
-        }
-    }
-
-    public void aplicarRendimentoPoupancas(double percentual) {
         int contasAtualizadas = 0;
-        for (Conta conta : contas) {
+        for (Conta conta : contasPoupanca) {
             if (conta instanceof ContaPoupanca) {
-                double saldoAnterior = conta.getSaldo();
-                conta.aplicarRendimento(percentual);
-                double saldoNovo = conta.getSaldo();
-                System.out.printf("Rendimento aplicado na conta %d: R$ %.2f -> R$ %.2f%n",
-                        conta.getNumero(), saldoAnterior, saldoNovo);
+                ContaPoupanca poupanca = (ContaPoupanca) conta;
+                poupanca.aplicarRendimento(percentual);
                 contasAtualizadas++;
             }
         }
-        if (contasAtualizadas == 0) {
-            System.out.println("Nenhuma conta poupança encontrada.");
-        } else {
-            System.out.println("Rendimento de " + percentual + "% aplicado a " + contasAtualizadas + " conta(s) poupança.");
-        }
+
+        return contasAtualizadas;
     }
 
-    public List<Conta> listarContas() {
-        return contas.stream()
-                .sorted((c1, c2) -> Double.compare(c2.getSaldo(), c1.getSaldo()))
-                .collect(Collectors.toList());
+    @Override
+    public List<Conta> listarContasOrdenadasPorSaldo() {
+        return repositorioContas.listarOrdenadasPorSaldo();
     }
 
-    public Cliente buscarClientePorCpf(String cpf) {
-        return clientes.stream()
-                .filter(c -> c.getCpf().equals(cpf))
-                .findFirst()
-                .orElse(null);
+    @Override
+    public Cliente buscarCliente(String cpf) throws ClienteNaoEncontradoException {
+        return repositorioClientes.buscarPorCpf(cpf)
+                .orElseThrow(() -> new ClienteNaoEncontradoException(cpf));
     }
 
-    private Conta buscarContaPorNumero(int numero) {
-        return contas.stream()
-                .filter(c -> c.getNumero() == numero)
-                .findFirst()
-                .orElse(null);
+    @Override
+    public List<Cliente> listarClientes() {
+        return repositorioClientes.listarTodos();
     }
 
-    public void gerarRelatorioConsolidacao() {
-        RelatorioServico relatorioServico = new RelatorioServico();
-        relatorioServico.gerarRelatorioConsolidacao(this);
+    /**
+     * Busca conta ou lança exceção se não encontrada.
+     * Boa Prática: Método privado para evitar duplicação.
+     *
+     * @param numeroConta Número da conta
+     * @return Conta encontrada
+     * @throws ContaNaoEncontradaException se não encontrada
+     */
+    private Conta buscarContaOuLancarExcecao(int numeroConta)
+            throws ContaNaoEncontradaException {
+        return repositorioContas.buscarPorNumero(numeroConta)
+                .orElseThrow(() -> new ContaNaoEncontradaException(numeroConta));
     }
 
-    public List<Cliente> getClientes() {
-        return new ArrayList<>(clientes);
+    /**
+     * Gera próximo número de conta de forma thread-safe.
+     *
+     * @return Próximo número de conta
+     */
+    private synchronized int gerarProximoNumeroConta() {
+        return proximoNumeroConta++;
     }
 
-    public List<Conta> getContas() {
-        return new ArrayList<>(contas);
+    /**
+     * Retorna repositório de contas (para relatórios).
+     * Boa Prática: Implementação da interface, expõe apenas a abstração.
+     *
+     * @return Repositório de contas
+     */
+    @Override
+    public IRepositorioContas getRepositorioContas() {
+        return repositorioContas;
     }
 }
