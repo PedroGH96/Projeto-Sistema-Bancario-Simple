@@ -101,15 +101,6 @@ public interface IOperacoesBancarias {
     List<Conta> listarContasOrdenadasPorSaldo();
 
     /**
-     * Busca cliente por CPF.
-     *
-     * @param cpf CPF do cliente
-     * @return Cliente encontrado
-     * @throws ClienteNaoEncontradoException se não encontrado
-     */
-    Cliente buscarCliente(String cpf) throws ClienteNaoEncontradoException;
-
-    /**
      * Lista todos os clientes.
      *
      * @return Lista de clientes

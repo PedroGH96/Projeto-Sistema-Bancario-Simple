@@ -10,21 +10,19 @@ import ui.Menu;
 /**
  * Classe principal do sistema bancário.
  * Boa Prática: Responsabilidade única de inicializar sistema.
- *
  * Boas Práticas Aplicadas:
- * ✓ Clean Code - Código limpo e legível
- * ✓ Nomes Significativos - Nomes descritivos
- * ✓ Funções Pequenas - Métodos coesos
- * ✓ Tratamento de Erros - Exceções personalizadas
- * ✓ Limites - Validações e constantes
- * ✓ Lei de Demeter - Evita cadeias de chamadas
- * ✓ SOLID - Todos os 5 princípios
- * ✓ Programação Defensiva - Validações robustas
- * ✓ Assertivas - Validação de invariantes
+ * Clean Code - Código limpo e legível
+ * Nomes Significativos - Nomes descritivos
+ * Funções Pequenas - Métodos coesos
+ * Tratamento de Erros - Exceções personalizadas
+ * Limites - Validações e constantes
+ * Lei de Demeter - Evita cadeias de chamadas
+ * SOLID - Todos os 5 princípios
+ * Programação Defensiva - Validações robustas
+ * Assertivas - Validação de invariantes
  *
  * @author Pedro Henrique de Araujo Alves
  * @author Samuel Evaristo de Fontes
- * @version 2.0
  */
 public class Main {
 

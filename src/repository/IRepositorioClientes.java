@@ -44,11 +44,4 @@ public interface IRepositorioClientes {
      * @return Lista de clientes
      */
     List<Cliente> listarTodos();
-
-    /**
-     * Retorna quantidade de clientes cadastrados.
-     *
-     * @return Quantidade de clientes
-     */
-    int contar();
 }

@@ -120,19 +120,4 @@ public final class ContaValidator {
         }
     }
 
-    /**
-     * Valida tipo de conta.
-     *
-     * @param tipoConta Tipo a ser validado
-     * @return true se tipo for válido
-     */
-    public static boolean isTipoContaValido(String tipoConta) {
-        if (tipoConta == null) {
-            return false;
-        }
-
-        String tipoLowerCase = tipoConta.toLowerCase().trim();
-        return Constantes.TIPO_CONTA_CORRENTE.equals(tipoLowerCase)
-                || Constantes.TIPO_CONTA_POUPANCA.equals(tipoLowerCase);
-    }
 }

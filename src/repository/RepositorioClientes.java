@@ -49,9 +49,4 @@ public class RepositorioClientes implements IRepositorioClientes {
         // Cópia defensiva - Programação Defensiva
         return new ArrayList<>(clientes);
     }
-
-    @Override
-    public int contar() {
-        return clientes.size();
-    }
 }

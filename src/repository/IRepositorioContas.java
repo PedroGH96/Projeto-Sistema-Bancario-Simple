@@ -55,11 +55,4 @@ public interface IRepositorioContas {
      * @return Lista de contas poupança
      */
     List<Conta> listarContasPoupanca();
-
-    /**
-     * Retorna quantidade de contas cadastradas.
-     *
-     * @return Quantidade de contas
-     */
-    int contar();
 }

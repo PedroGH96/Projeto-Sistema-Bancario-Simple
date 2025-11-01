@@ -120,12 +120,6 @@ public class BancoServico implements IOperacoesBancarias {
     }
 
     @Override
-    public Cliente buscarCliente(String cpf) throws ClienteNaoEncontradoException {
-        return repositorioClientes.buscarPorCpf(cpf)
-                .orElseThrow(() -> new ClienteNaoEncontradoException(cpf));
-    }
-
-    @Override
     public List<Cliente> listarClientes() {
         return repositorioClientes.listarTodos();
     }

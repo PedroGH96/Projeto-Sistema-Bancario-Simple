@@ -3,7 +3,6 @@ package model;
 import java.util.Objects;
 import exception.SaldoInsuficienteException;
 import exception.ValorInvalidoException;
-import model.Cliente;
 import validator.ContaValidator;
 
 
@@ -66,17 +65,6 @@ public abstract class Conta {
     public final int getNumero() {
         validarInvariante();
         return numeroConta;
-    }
-
-    /**
-     * Retorna o cliente titular.
-     * Boa Prática: Retorna objeto imutável (Cliente é final).
-     *
-     * @return Cliente titular
-     */
-    public final Cliente getCliente() {
-        validarInvariante();
-        return cliente;
     }
 
     /**

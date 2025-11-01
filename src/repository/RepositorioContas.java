@@ -57,9 +57,4 @@ public class RepositorioContas implements IRepositorioContas {
                 .filter(c -> c instanceof ContaPoupanca)
                 .collect(Collectors.toList());
     }
-
-    @Override
-    public int contar() {
-        return contas.size();
-    }
 }

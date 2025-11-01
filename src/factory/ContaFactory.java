@@ -55,19 +55,4 @@ public final class ContaFactory {
         }
     }
 
-    /**
-     * Verifica se o tipo de conta é válido.
-     *
-     * @param tipoConta Tipo a ser validado
-     * @return true se válido
-     */
-    public static boolean isTipoContaValido(String tipoConta) {
-        if (tipoConta == null) {
-            return false;
-        }
-
-        String tipoNormalizado = tipoConta.toLowerCase().trim();
-        return Constantes.TIPO_CONTA_CORRENTE.equals(tipoNormalizado)
-                || Constantes.TIPO_CONTA_POUPANCA.equals(tipoNormalizado);
-    }
 }

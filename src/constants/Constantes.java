@@ -21,14 +21,8 @@ public final class Constantes {
     public static final String TIPO_CONTA_POUPANCA = "poupanca";
 
     // ============= MENSAGENS DE ERRO =============
-    public static final String ERRO_CLIENTE_NULO = "Cliente não pode ser nulo";
-    public static final String ERRO_CPF_INVALIDO = "CPF inválido";
     public static final String ERRO_CPF_NULO = "CPF não pode ser nulo";
-    public static final String ERRO_NOME_INVALIDO = "Nome inválido";
     public static final String ERRO_NOME_NULO = "Nome não pode ser nulo";
-    public static final String ERRO_SALDO_NEGATIVO = "Saldo não pode ser negativo";
-    public static final String ERRO_SALDO_EXCEDE_LIMITE = "Saldo excede o limite permitido";
-    public static final String ERRO_VALOR_INVALIDO = "Valor deve ser positivo";
 
     // ============= LIMITES DE OPERAÇÃO =============
     public static final double VALOR_MINIMO_OPERACAO = 0.01;

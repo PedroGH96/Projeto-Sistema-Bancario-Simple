@@ -51,14 +51,14 @@ public class Menu {
 
         } while (opcao != 0);
 
-        System.out.println("\n✓ Saindo do sistema... Até logo!");
+        System.out.println("\nSaindo do sistema... Até logo!");
         scanner.close();
     }
 
     private void exibirBanner() {
         System.out.println("╔════════════════════════════════════════╗");
-        System.out.println("║   SISTEMA BANCÁRIO SIMPLES v2.0       ║");
-        System.out.println("║   Implementado com Boas Práticas      ║");
+        System.out.println("║       SISTEMA BANCÁRIO SIMPLES         ║");
+        System.out.println("║     Implementado com Boas Práticas     ║");
         System.out.println("╚════════════════════════════════════════╝");
     }
 
@@ -89,7 +89,7 @@ public class Menu {
             return opcao;
         } catch (InputMismatchException e) {
             scanner.nextLine(); // Limpa buffer
-            System.out.println("✗ Erro: Digite um número válido!");
+            System.out.println("Erro: Digite um número válido!");
             return -1;
         }
     }
@@ -106,10 +106,10 @@ public class Menu {
                 case 7: aplicarRendimento(); break;
                 case 8: listarContas(); break;
                 case 9: exibirRelatorio(); break;
-                default: System.out.println("✗ Opção inválida!");
+                default: System.out.println("Opção inválida!");
             }
         } catch (Exception e) {
-            System.out.println("✗ Erro: " + e.getMessage());
+            System.out.println("Erro: " + e.getMessage());
         }
     }
 
@@ -126,10 +126,10 @@ public class Menu {
             String cpf = scanner.nextLine();
 
             Cliente cliente = operacoesBancarias.cadastrarCliente(nome, cpf);
-            System.out.println("✓ Cliente cadastrado: " + cliente.getNome());
+            System.out.println("Cliente cadastrado: " + cliente.getNome());
 
         } catch (BancoException e) {
-            System.out.println("✗ " + e.getMessage());
+            System.out.println("Erro " + e.getMessage());
         }
     }
 
@@ -137,16 +137,17 @@ public class Menu {
         System.out.println("\n=== CADASTRAR CONTA ===");
 
         try {
-            // Lista clientes
-            listarClientesDisponiveis();
-
-            System.out.print("\nCPF do cliente: ");
-            String cpf = scanner.nextLine();
+            // Seleção de cliente via menu numérico
+            String cpf = selecionarCliente();
+            if (cpf == null) {
+                System.out.println("Operação cancelada.");
+                return;
+            }
 
             // Seleção de tipo de conta via menu numérico
             String tipo = selecionarTipoConta();
             if (tipo == null) {
-                System.out.println("✗ Operação cancelada.");
+                System.out.println("Operação cancelada.");
                 return;
             }
 
@@ -154,13 +155,48 @@ public class Menu {
             double saldo = lerDouble();
 
             Conta conta = operacoesBancarias.cadastrarConta(cpf, tipo, saldo);
-            System.out.printf("✓ Conta %s criada! Número: %d%n",
+            System.out.printf("Conta %s criada! Número: %d%n",
                     conta.getTipo(), conta.getNumero());
 
-        } catch (BancoException e) {
-            System.out.println("✗ " + e.getMessage());
+        } catch (BancoException | IllegalArgumentException e) {
+            System.out.println("Erro " + e.getMessage());
+        }
+    }
+
+    /**
+     * Exibe lista de clientes e permite seleção por número.
+     * Boa Prática: Interface mais robusta, evita erros de digitação de CPF.
+     *
+     * @return CPF do cliente selecionado ou null se opção inválida
+     */
+    private String selecionarCliente() {
+        List<Cliente> clientes = operacoesBancarias.listarClientes();
+
+        if (clientes.isEmpty()) {
+            System.out.println("Nenhum cliente cadastrado. Cadastre um cliente primeiro.");
+            return null;
+        }
+
+        System.out.println("\nSelecione o cliente:");
+        for (int i = 0; i < clientes.size(); i++) {
+            Cliente cliente = clientes.get(i);
+            System.out.printf("%d. %s - CPF: %s%n",
+                    (i + 1), cliente.getNome(), cliente.getCpfFormatado());
+        }
+        System.out.print("\nOpção: ");
+
+        try {
+            int opcao = lerInt();
+
+            if (opcao < 1 || opcao > clientes.size()) {
+                System.out.printf("Opção inválida! Selecione um número entre 1 e %d.%n", clientes.size());
+                return null;
+            }
+
+            return clientes.get(opcao - 1).getCpf();
         } catch (IllegalArgumentException e) {
-            System.out.println("✗ " + e.getMessage());
+            System.out.println("Erro " + e.getMessage());
+            return null;
         }
     }
 
@@ -189,7 +225,7 @@ public class Menu {
                     return null;
             }
         } catch (IllegalArgumentException e) {
-            System.out.println("✗ " + e.getMessage());
+            System.out.println("Erro " + e.getMessage());
             return null;
         }
     }
@@ -207,10 +243,10 @@ public class Menu {
             double valor = lerDouble();
 
             operacoesBancarias.depositar(numero, valor);
-            System.out.printf("✓ Depósito de R$ %.2f realizado!%n", valor);
+            System.out.printf("Depósito de R$ %.2f realizado!%n", valor);
 
         } catch (BancoException e) {
-            System.out.println("✗ " + e.getMessage());
+            System.out.println("Erro " + e.getMessage());
         }
     }
 
@@ -225,10 +261,10 @@ public class Menu {
             double valor = lerDouble();
 
             operacoesBancarias.sacar(numero, valor);
-            System.out.printf("✓ Saque de R$ %.2f realizado!%n", valor);
+            System.out.printf("Saque de R$ %.2f realizado!%n", valor);
 
         } catch (BancoException e) {
-            System.out.println("✗ " + e.getMessage());
+            System.out.println("Erro " + e.getMessage());
         }
     }
 
@@ -246,10 +282,10 @@ public class Menu {
             double valor = lerDouble();
 
             operacoesBancarias.transferir(origem, destino, valor);
-            System.out.printf("✓ Transferência de R$ %.2f realizada!%n", valor);
+            System.out.printf("Transferência de R$ %.2f realizada!%n", valor);
 
         } catch (BancoException e) {
-            System.out.println("✗ " + e.getMessage());
+            System.out.println("Erro " + e.getMessage());
         }
     }
 
@@ -261,10 +297,10 @@ public class Menu {
             int numero = lerInt();
 
             double saldo = operacoesBancarias.consultarSaldo(numero);
-            System.out.printf("✓ Saldo atual: R$ %.2f%n", saldo);
+            System.out.printf("Saldo atual: R$ %.2f%n", saldo);
 
         } catch (BancoException e) {
-            System.out.println("✗ " + e.getMessage());
+            System.out.println("Erro " + e.getMessage());
         }
     }
 
@@ -276,11 +312,11 @@ public class Menu {
             double taxa = lerDouble();
 
             int contasAtualizadas = operacoesBancarias.aplicarRendimentoPoupancas(taxa);
-            System.out.printf("✓ Rendimento de %.2f%% aplicado em %d conta(s)!%n",
+            System.out.printf("Rendimento de %.2f%% aplicado em %d conta(s)!%n",
                     taxa, contasAtualizadas);
 
         } catch (BancoException e) {
-            System.out.println("✗ " + e.getMessage());
+            System.out.println("Erro " + e.getMessage());
         }
     }
 
@@ -290,7 +326,7 @@ public class Menu {
         List<Conta> contas = operacoesBancarias.listarContasOrdenadasPorSaldo();
 
         if (contas.isEmpty()) {
-            System.out.println("\n✗ Nenhuma conta cadastrada.");
+            System.out.println("\nNenhuma conta cadastrada.");
             return;
         }
 
@@ -301,23 +337,7 @@ public class Menu {
                     (i + 1), conta.getTipo(), conta.getNumero(),
                     conta.getNomeCliente(), conta.getSaldo());
         }
-        System.out.println("╚═════════════════════════════════════════════════════════════════╝");
-    }
-
-    private void listarClientesDisponiveis() {
-        List<Cliente> clientes = operacoesBancarias.listarClientes();
-
-        if (clientes.isEmpty()) {
-            System.out.println("Nenhum cliente cadastrado.");
-            return;
-        }
-
-        System.out.println("\nClientes cadastrados:");
-        for (int i = 0; i < clientes.size(); i++) {
-            Cliente cliente = clientes.get(i);
-            System.out.printf("%d. %s - CPF: %s%n",
-                    (i + 1), cliente.getNome(), cliente.getCpfFormatado());
-        }
+        System.out.println("╚═══════════════════════════════════════════════════════════════╝");
     }
 
     /**
@@ -329,7 +349,7 @@ public class Menu {
             repository.IRepositorioContas repositorioContas = operacoesBancarias.getRepositorioContas();
             relatorioServico.gerarRelatorioConsolidacao(repositorioContas);
         } catch (Exception e) {
-            System.out.println("✗ Erro ao gerar relatório: " + e.getMessage());
+            System.out.println("Erro ao gerar relatório: " + e.getMessage());
         }
     }
 
