@@ -320,7 +320,7 @@ public void sacar(double valor) throws ... {
 
 ```bash
 # Navegar para o diretório do projeto
-cd sistema-bancario-v2
+cd Projeto-Sistema-Bancario-Simple
 
 # Compilar todos os arquivos
 javac -d out src/constants/*.java src/exception/*.java src/model/*.java src/validator/*.java src/factory/*.java src/repository/*.java src/service/*.java src/ui/*.java src/Main.java
@@ -338,15 +338,6 @@ javac -d out src/**/*.java
 ```bash
 java -cp out Main
 ```
-
-### Executar com assertivas habilitadas (recomendado)
-
-```bash
-java -ea -cp out Main
-```
-
-A flag `-ea` (enable assertions) ativa as assertivas para validação de invariantes.
-
 ---
 
 ## Guia de Uso
@@ -384,13 +375,6 @@ A flag `-ea` (enable assertions) ativa as assertivas para validação de invaria
 ---
 
 ## Testes de Invariantes
-
-O sistema utiliza assertivas para garantir que o estado dos objetos seja sempre válido:
-
-```bash
-# Executar com assertivas habilitadas
-java -ea -cp out Main
-```
 
 As assertivas verificam:
 - Saldo nunca negativo
