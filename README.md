@@ -315,29 +315,30 @@ public void sacar(double valor) throws ... {
 
 - Java JDK 8 ou superior
 - Terminal/Prompt de Comando
-
-### Compilação
-
-```bash
-# Navegar para o diretório do projeto
-cd Projeto-Sistema-Bancario-Simple
-
-# Compilar todos os arquivos
-javac -d out src/constants/*.java src/exception/*.java src/model/*.java src/validator/*.java src/factory/*.java src/repository/*.java src/service/*.java src/ui/*.java src/Main.java
-
-# Ou compilar sem especificar pasta de saída
-javac -d out src/**/*.java
-```
-
 ---
+
+### 🧱 Compilar o projeto (Windows)
+
+Abra o **Prompt de Comando (cmd)** na pasta do projeto e execute:
+
+```cmd
+dir /s /b *.java > sources.txt
+javac -d bin @sources.txt
+```
 
 ## ▶Como Executar
 
-### Executar com pasta out
-
-```bash
-java -cp out Main
+### Execute:
+```cmd
+java -cp bin Main
 ```
+
+### Usando assertivas:
+
+```cmd
+java -ea -cp bin Main
+```
+
 ---
 
 ## Guia de Uso
@@ -381,6 +382,13 @@ As assertivas verificam:
 - CPF sempre com 11 dígitos
 - Número de conta sempre positivo
 - Valores numéricos válidos (não NaN/Infinito)
+
+O sistema utiliza assertivas para garantir que o estado dos objetos seja sempre válido:
+
+```bash
+# Executar com assertivas habilitadas
+java -ea -cp out Main
+```
 
 ---
 

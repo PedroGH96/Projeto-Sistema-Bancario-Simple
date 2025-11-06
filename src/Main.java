@@ -37,7 +37,7 @@ public class Main {
             aplicacao.executar();
 
         } catch (Exception e) {
-            System.err.println("✗ Erro fatal no sistema: " + e.getMessage());
+            System.err.println("Erro fatal no sistema: " + e.getMessage());
             e.printStackTrace();
             System.exit(1);
         }
